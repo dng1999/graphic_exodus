@@ -5,8 +5,9 @@ from gmath import *
 
 
 def scanline_convert(polygons, i, screen, zbuffer):
-    print i
-    print zbuffer
+    p1 = [polygons[i][0],polygons[i][1],polygons[i][2]]
+    p2 = [polygons[i+1][0],polygons[i+1][1],polygons[i+1][2]]
+    p3 = [polygons[i+2][0],polygons[i+2][1],polygons[i+2][2]]
     '''topY = max(y)
     topX = x[y.index(topY)]
     botY = min(y)
@@ -30,6 +31,7 @@ def scanline_convert(polygons, i, screen, zbuffer):
     y = botY
     while y <= topY:
         draw_line(int(currx0), y, int(currx1), y, screen, color)
+    #draw_line( x0, y0, z0, x1, y1, z1, screen, zbuffer, color )
         if y < midY:
             currx1 += dMB
         else:
@@ -47,12 +49,10 @@ def draw_polygons( matrix, screen, zbuffer, color ):
     if len(matrix) < 2:
         print 'Need at least 3 points to draw'
         return
-    color2 = [0,55,102]
+    
     point = 0    
     while point < len(matrix) - 2:
-        color1 = [0,0,0]
-        color2[0] = (color2[0]+3) % 255
-        color2[1] = (color2[1]+5) % 255
+        
         normal = calculate_normal(matrix, point)[:]
         #print normal
         if normal[2] > 0:
