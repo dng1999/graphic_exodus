@@ -8,12 +8,16 @@ def scanline_convert(polygons, i, screen, zbuffer):
     p1 = [polygons[i][0],polygons[i][1],polygons[i][2]]
     p2 = [polygons[i+1][0],polygons[i+1][1],polygons[i+1][2]]
     p3 = [polygons[i+2][0],polygons[i+2][1],polygons[i+2][2]]
-    '''topY = max(y)
-    topX = x[y.index(topY)]
-    botY = min(y)
-    botX = x[y.index(botY)]
-    midY = y[0]
-    midX = x[0]
+    points = dict([(p1[1],[p1[0],p1[2]]),
+                (p2[1],[p2[0],p2[2]]),
+                (p3[1],[p3[0],p3[2]])])
+    skey =  sorted(points)
+    botY = skey[0]
+    botX = points[botY][0]
+    midY = skey[1]
+    midX = points[midY][0]
+    topY = skey[2]
+    topX = points[topY][0]
 
     dTB = 0
     dMB = 0
@@ -37,7 +41,7 @@ def scanline_convert(polygons, i, screen, zbuffer):
         else:
             currx1 += dTM
         currx0 += dTB
-        y += 1'''
+        y += 1
 
 
 def add_polygon( polygons, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
@@ -51,7 +55,7 @@ def draw_polygons( matrix, screen, zbuffer, color ):
         return
     
     point = 0    
-    while point < len(matrix) - 2:
+    while point < 3:#len(matrix) - 2:
         
         normal = calculate_normal(matrix, point)[:]
         #print normal
