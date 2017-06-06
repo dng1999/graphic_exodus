@@ -4,7 +4,7 @@ from math import *
 from gmath import *
 
 
-def scanline_convert(polygons, i, screen, zbuffer):
+def scanline_convert(polygons, i, screen, zbuffer,color):
     p1 = [polygons[i][0],polygons[i][1],polygons[i][2]]
     p2 = [polygons[i+1][0],polygons[i+1][1],polygons[i+1][2]]
     p3 = [polygons[i+2][0],polygons[i+2][1],polygons[i+2][2]]
@@ -12,12 +12,18 @@ def scanline_convert(polygons, i, screen, zbuffer):
                 (p2[1],[p2[0],p2[2]]),
                 (p3[1],[p3[0],p3[2]])])
     skey =  sorted(points)
+    
     botY = skey[0]
     botX = points[botY][0]
+    botZ = points[botY][1]
+    
     midY = skey[1]
     midX = points[midY][0]
+    midZ = points[midY][1]
+    
     topY = skey[2]
     topX = points[topY][0]
+    topZ = points[topY][1]
 
     dTB = 0
     dMB = 0
@@ -29,18 +35,34 @@ def scanline_convert(polygons, i, screen, zbuffer):
         dMB = float(midX - botX) / (midY - botY)
     if topY != midY:
         dTM = float(topX - midX) / (topY - midY)
-    #print dTB, dMB, dTM
-    currx0 = botX
-    currx1 = botX
+
+    dz0 = 0
+    dz1 = 0
+    dz2 = 0
+
+    if topZ != botZ:
+        dz0 = float(topZ - botZ) / (topY - botY)
+    if botZ != midZ:
+        dz1 = float(midZ - botZ) / (midY - botY)
+    if topZ != midZ:
+        dz2 = float(topZ - midZ) / (topY - midY)
+
+    x0 = botX
+    x1 = botX
+    z0 = botZ
+    z1 = botZ
     y = botY
     while y <= topY:
-        draw_line(int(currx0), y, int(currx1), y, screen, color)
-    #draw_line( x0, y0, z0, x1, y1, z1, screen, zbuffer, color )
+        #draw_line(int(x0), y, int(x1), y, screen, color)
+        draw_line( int(x0), int(y), z0, int(x1), int(y), z1, screen, zbuffer, color )
         if y < midY:
-            currx1 += dMB
+            x1 += dMB
+            z1 += dz1
         else:
-            currx1 += dTM
-        currx0 += dTB
+            x1 += dTM
+            z1 += dz2
+        z0 += dz0
+        x0 += dTB
         y += 1
 
 
@@ -60,7 +82,7 @@ def draw_polygons( matrix, screen, zbuffer, color ):
         normal = calculate_normal(matrix, point)[:]
         #print normal
         if normal[2] > 0:
-            scanline_convert(matrix, point, screen, zbuffer)            
+            #scanline_convert(matrix, point, screen, zbuffer,color)            
             draw_line( int(matrix[point][0]),
                        int(matrix[point][1]),
                        matrix[point][2],
