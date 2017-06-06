@@ -72,17 +72,20 @@ def add_polygon( polygons, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
     add_point(polygons, x2, y2, z2);
 
 def draw_polygons( matrix, screen, zbuffer, color ):
+    color1 = [66,134,244]
     if len(matrix) < 2:
         print 'Need at least 3 points to draw'
         return
     
     point = 0    
-    while point < 3:#len(matrix) - 2:
+    while point < len(matrix) - 2:
+        color1[0] = (color1[0]+3)%255
+        color1[2] = (color1[2]+5)%255
         
         normal = calculate_normal(matrix, point)[:]
         #print normal
         if normal[2] > 0:
-            #scanline_convert(matrix, point, screen, zbuffer,color)            
+            scanline_convert(matrix, point, screen, zbuffer,color1)            
             draw_line( int(matrix[point][0]),
                        int(matrix[point][1]),
                        matrix[point][2],

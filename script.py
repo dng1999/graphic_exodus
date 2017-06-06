@@ -98,7 +98,7 @@ def run(filename):
     """
     This function runs an mdl script
     """
-    color = [255, 255, 255]
+    color = [0, 0, 0]
     tmp = new_matrix()
     ident( tmp )
 
