@@ -22,10 +22,11 @@ from draw import *
   ==================== """
 def first_pass( commands ):
 
-    frameCheck = varyCheck = nameCheck = False
+    frameCheck = varyCheck = nameCheck = shadeCheck = ambCheck = False
     name = ''
     num_frames = 1
-    
+    shadeType = ''
+    ambient = []
     for command in commands:
         
         if command[0] == 'frames':
@@ -36,6 +37,12 @@ def first_pass( commands ):
         elif command[0] == 'basename':
             name = command[1]
             nameCheck = True
+        elif command[0] = 'shading':
+            shadeType = command[1]
+            shadeCheck = True
+        elif command[0] = 'ambient':
+            ambient.append(command[1],command[2],command[3])
+            ambCheck = True
 
     if varyCheck and not frameCheck:
         print 'Error: Vary command found without setting number of frames!'
@@ -44,8 +51,13 @@ def first_pass( commands ):
     elif frameCheck and not nameCheck:
         print 'Animation code present but basename was not set. Using "frame" as basename.'
         name = 'frame'
+
+    if not shadeCheck:
+        print 'Shading model not specified. Using flat shading model.'
+    if not ambCheck:
+        print 'Ambient lighting source not specified. Setting at 0 0 0.'
     
-    return (name, num_frames)
+    return (name, num_frames, shadeType, ambient)
 
 """======== second_pass( commands ) ==========
 
@@ -110,15 +122,14 @@ def run(filename):
         print "Parsing failed."
         return
 
-    (name, num_frames) = first_pass(commands)
+    (name, num_frames, shadeType, ambient) = first_pass(commands)
     frames = second_pass(commands, num_frames)
-    #print frames
-    step = 0.1
 
+    
     #print symbols
 
     for f in range(num_frames):
-
+ 
         tmp = new_matrix()
         ident(tmp)
         stack = [ [x[:] for x in tmp] ]
@@ -150,19 +161,19 @@ def run(filename):
                         args[0], args[1], args[2],
                         args[3], args[4], args[5])
                 matrix_mult( stack[-1], tmp )
-                draw_polygons(tmp, screen, zb, color)
+                draw_polygons(tmp, screen, zb, color, shadeType, ambient)
                 tmp = []
             elif c == 'sphere':
                 add_sphere(tmp,
                            args[0], args[1], args[2], args[3], step)
                 matrix_mult( stack[-1], tmp )
-                draw_polygons(tmp, screen, zb, color)
+                draw_polygons(tmp, screen, zb, color, shadeType, ambient)
                 tmp = []
             elif c == 'torus':
                 add_torus(tmp,
                           args[0], args[1], args[2], args[3], args[4], step)
                 matrix_mult( stack[-1], tmp )
-                draw_polygons(tmp, screen, zb, color)
+                draw_polygons(tmp, screen, zb, color, shadeType, ambient)
                 tmp = []
             elif c == 'move':
                 if command[-1]:

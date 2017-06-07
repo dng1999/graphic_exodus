@@ -3,8 +3,27 @@ from matrix import *
 from math import *
 from gmath import *
 
+def lighting(polygons, i, color, shadeType, ambient):
+    ambientConst = 0.1
+    diffuseConst = 0.1
+    specularConst = 0.1
+    normal = calculate_normal(polygons,i)
+    #what are the three numbers for ambient (color of the light?)
+    #do we make up the constants ourselves
+    ##ambient
+    aR = ambient[0]*ambientConst
+    aG = ambient[1]*ambientConst
+    aB = ambient[2]*ambientConst
+    ##diffuse
+    #where is the light coming from
+    #how to dot product
 
-def scanline_convert(polygons, i, screen, zbuffer,color):
+    ##specular
+    #where to get the intensity of point light
+    #??? basically lost
+    pass
+
+def scanline_convert(polygons, i, screen, zbuffer, color, shadeType, ambient):
     p1 = [polygons[i][0],polygons[i][1],polygons[i][2]]
     p2 = [polygons[i+1][0],polygons[i+1][1],polygons[i+1][2]]
     p3 = [polygons[i+2][0],polygons[i+2][1],polygons[i+2][2]]
@@ -53,7 +72,6 @@ def scanline_convert(polygons, i, screen, zbuffer,color):
     z1 = botZ
     y = botY
     while y <= topY:
-        #draw_line(int(x0), y, int(x1), y, screen, color)
         draw_line( int(x0), int(y), z0, int(x1), int(y), z1, screen, zbuffer, color )
         if y < midY:
             x1 += dMB
@@ -71,21 +89,18 @@ def add_polygon( polygons, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
     add_point(polygons, x1, y1, z1);
     add_point(polygons, x2, y2, z2);
 
-def draw_polygons( matrix, screen, zbuffer, color ):
-    color1 = [66,134,244]
+def draw_polygons( matrix, screen, zbuffer, color, shadeType, ambient ):
     if len(matrix) < 2:
         print 'Need at least 3 points to draw'
         return
     
     point = 0    
     while point < len(matrix) - 2:
-        color1[0] = (color1[0]+3)%255
-        color1[2] = (color1[2]+5)%255
         
         normal = calculate_normal(matrix, point)[:]
         #print normal
         if normal[2] > 0:
-            scanline_convert(matrix, point, screen, zbuffer,color1)            
+            scanline_convert(matrix, point, screen, zbuffer, color, shadeType, ambient)            
             draw_line( int(matrix[point][0]),
                        int(matrix[point][1]),
                        matrix[point][2],
