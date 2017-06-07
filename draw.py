@@ -21,6 +21,8 @@ def lighting(polygons, i, color, shadeType, ambient):
     ##specular
     #where to get the intensity of point light
     #??? basically lost
+    #maybe this camera 1 2 3 10 20 30 
+    #light f 1 2 3 4 5 6
     pass
 
 def scanline_convert(polygons, i, screen, zbuffer, color, shadeType, ambient):
