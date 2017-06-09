@@ -17,7 +17,9 @@ def lighting(polygons, i, color, shadeType, ambient):
     ##diffuse
     #where is the light coming from
     #how to dot product
-    
+    nn = normalize(normal)
+    nl = normalize(source[0])
+    dR = source[1][0]*diffuseConst*
     ##specular
     #where to get the intensity of point light
     #??? basically lost
@@ -29,7 +31,11 @@ def dot_prod(vec1, vec2):
     return (vec1[0]*vec2[0])+(vec1[1]*vec2[1])+(vec1[2]*vec2[2])
 
 def magnitude(vec):
-    return
+    return sqrt(vec[0]**2 + vec[1]**2 + vec[2]**2)
+
+def normalize(vec):
+    mag = magnitude(vec)
+    return [vec[0]/mag, vec[1]/mag, vec[2]/mag]
 
 def scanline_convert(polygons, i, screen, zbuffer, color, shadeType, ambient):
     color = [0, 0, 100]
