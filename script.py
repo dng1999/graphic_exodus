@@ -37,10 +37,10 @@ def first_pass( commands ):
         elif command[0] == 'basename':
             name = command[1]
             nameCheck = True
-        elif command[0] = 'shading':
+        elif command[0] == 'shading':
             shadeType = command[1]
             shadeCheck = True
-        elif command[0] = 'ambient':
+        elif command[0] == 'ambient':
             ambient.append(command[1],command[2],command[3])
             ambCheck = True
 
@@ -124,7 +124,7 @@ def run(filename):
 
     (name, num_frames, shadeType, ambient) = first_pass(commands)
     frames = second_pass(commands, num_frames)
-
+    step = 0.1
     
     #print symbols
 

@@ -7,9 +7,9 @@ def lighting(polygons, i, color, shadeType, ambient):
     ambientConst = 0.1
     diffuseConst = 0.1
     specularConst = 0.1
+    #source[ location, color ]
+    source = [[0,0,0],[0,0,0]]
     normal = calculate_normal(polygons,i)
-    #what are the three numbers for ambient (color of the light?)
-    #do we make up the constants ourselves
     ##ambient
     aR = ambient[0]*ambientConst
     aG = ambient[1]*ambientConst
@@ -17,7 +17,7 @@ def lighting(polygons, i, color, shadeType, ambient):
     ##diffuse
     #where is the light coming from
     #how to dot product
-
+    
     ##specular
     #where to get the intensity of point light
     #??? basically lost
@@ -25,7 +25,14 @@ def lighting(polygons, i, color, shadeType, ambient):
     #light f 1 2 3 4 5 6
     pass
 
+def dot_prod(vec1, vec2):
+    return (vec1[0]*vec2[0])+(vec1[1]*vec2[1])+(vec1[2]*vec2[2])
+
+def magnitude(vec):
+    return
+
 def scanline_convert(polygons, i, screen, zbuffer, color, shadeType, ambient):
+    color = [0, 0, 100]
     p1 = [polygons[i][0],polygons[i][1],polygons[i][2]]
     p2 = [polygons[i+1][0],polygons[i+1][1],polygons[i+1][2]]
     p3 = [polygons[i+2][0],polygons[i+2][1],polygons[i+2][2]]
@@ -46,44 +53,39 @@ def scanline_convert(polygons, i, screen, zbuffer, color, shadeType, ambient):
     topX = points[topY][0]
     topZ = points[topY][1]
 
-    dTB = 0
-    dMB = 0
-    dTM = 0
+    dx0 = float(topX - botX) / (topY - botY)
+    dz0 = float(topZ - botZ) / (topY - botY)
     
-    if topY != botY:
-        dTB = float(topX - botX) / (topY - botY)
     if botY != midY:
-        dMB = float(midX - botX) / (midY - botY)
-    if topY != midY:
-        dTM = float(topX - midX) / (topY - midY)
-
-    dz0 = 0
-    dz1 = 0
-    dz2 = 0
-
-    if topZ != botZ:
-        dz0 = float(topZ - botZ) / (topY - botY)
-    if botZ != midZ:
+        dx1 = float(midX - botX) / (midY - botY)
+        x1 = botX
         dz1 = float(midZ - botZ) / (midY - botY)
-    if topZ != midZ:
-        dz2 = float(topZ - midZ) / (topY - midY)
-
+        z1 = botZ
+    else:
+        dx1 = float(topX - botX) / (topY - botY)
+        x1 = midX
+        dz1 = float(topZ - botZ) / (topY - botY)
+        z1 = midZ
+        
     x0 = botX
-    x1 = botX
     z0 = botZ
-    z1 = botZ
     y = botY
+    
     while y <= topY:
-        draw_line( int(x0), int(y), z0, int(x1), int(y), z1, screen, zbuffer, color )
-        if y < midY:
-            x1 += dMB
-            z1 += dz1
-        else:
-            x1 += dTM
-            z1 += dz2
-        z0 += dz0
-        x0 += dTB
+        draw_line( int(x0), int(y), int(z0), int(x1), int(y), int(z1), screen, zbuffer, color )
+        if y > midY:
+            if topY != midY:
+                dx1 = float(topX - midX) / (topY - midY)
+                dz1 = float(topZ - midZ) / (topY - midY)
+            else:
+                dx1 = float(topX - lowX) / (topY - lowY)
+                dz1 = float(topZ - lowZ) / (topY - lowY)
+                
+        x0 += dx0
+        x1 += dx1
         y += 1
+        z0 += dz0
+        z1 += dz1
 
 
 def add_polygon( polygons, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
