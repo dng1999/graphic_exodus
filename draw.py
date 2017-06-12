@@ -52,29 +52,23 @@ def normalize(vec):
     return [vec[0]/mag, vec[1]/mag, vec[2]/mag]
 
 def scanline_convert(polygons, i, screen, zbuffer, color, shadeType, ambient):
-
     color = lighting(polygons, i, color, shadeType, ambient)
+
     p1 = [polygons[i][0],polygons[i][1],polygons[i][2]]
     p2 = [polygons[i+1][0],polygons[i+1][1],polygons[i+1][2]]
     p3 = [polygons[i+2][0],polygons[i+2][1],polygons[i+2][2]]
-    points = [p1,p2,p3]
-    Ys = [p1[1],p2[1],p3[1]]
-
-    bI = Ys.index(min(Ys))
-    botY = Ys.pop(bI)
-    botX = points[bI][0]
-    botZ = points[bI][1]
-    points.pop(bI)
-
-    tI = Ys.index(max(Ys))
-    topY = Ys.pop(tI)
-    topX = points[tI][0]
-    topZ = points[tI][1]
-
-    midY = points[0][1]
-    midX = points[0][0]
-    midZ = points[0][1]
-
+    points = sorted([p1,p2,p3], key=lambda x: x[1])
+    
+    botX = points[0][0]
+    botY = points[0][1]
+    botZ = points[0][2]
+    midX = points[1][0]
+    midY = points[1][1]
+    midZ = points[1][2]
+    topX = points[2][0]
+    topY = points[2][1]
+    topZ = points[2][2]
+    
     dx0 = float(topX - botX) / (topY - botY)
     dz0 = float(topZ - botZ) / (topY - botY)
 
@@ -84,25 +78,26 @@ def scanline_convert(polygons, i, screen, zbuffer, color, shadeType, ambient):
         dz1 = float(midZ - botZ) / (midY - botY)
         z1 = botZ
     else:
-        dx1 = float(topX - botX) / (topY - botY)
+        dx1 = float(topX - midX) / (topY - midY)
         x1 = midX
-        dz1 = float(topZ - botZ) / (topY - botY)
+        dz1 = float(topZ - midZ) / (topY - midY)
         z1 = midZ
     
     x0 = botX
     z0 = botZ
     y = botY
-    
+
     while y <= topY:
+        #print int(x0), int(y), int(z0), int(x1), int(y), int(z1)
         draw_line( int(x0), int(y), int(z0), int(x1), int(y), int(z1), screen, zbuffer, color )
         if y > midY:
             if topY != midY:
                 dx1 = float(topX - midX) / (topY - midY)
                 dz1 = float(topZ - midZ) / (topY - midY)
             else:
-                dx1 = float(topX - lowX) / (topY - lowY)
-                dz1 = float(topZ - lowZ) / (topY - lowY)
-                
+                dx1 = float(midX - botX) / (midY - botY)
+                dz1 = float(midZ - botZ) / (midY - botY)
+
         x0 += dx0
         x1 += dx1
         y += 1

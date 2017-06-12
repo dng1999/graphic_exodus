@@ -126,7 +126,7 @@ def run(filename):
 
     (name, num_frames, shadeType, ambient) = first_pass(commands)
     frames = second_pass(commands, num_frames)
-    step = 0.01
+    step = 0.1
     
     #print symbols
 
