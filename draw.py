@@ -4,28 +4,42 @@ from math import *
 from gmath import *
 
 def lighting(polygons, i, color, shadeType, ambient):
-    ambientConst = 0.1
-    diffuseConst = 0.1
-    specularConst = 0.1
-    #source[ location, color ]
-    source = [[0,0,0],[0,0,0]]
+    I = [0,0,0]
+    aC = 0.1
+    dC = 0.3
+    sC = 0.5
+    pointL = [[255,255,255], [0, 0, 0]]
     normal = calculate_normal(polygons,i)
-    ##ambient
-    aR = ambient[0]*ambientConst
-    aG = ambient[1]*ambientConst
-    aB = ambient[2]*ambientConst
-    ##diffuse
-    #where is the light coming from
-    #how to dot product
-    nn = normalize(normal)
-    nl = normalize(source[0])
-    dR = source[1][0]*diffuseConst*
-    ##specular
-    #where to get the intensity of point light
-    #??? basically lost
-    #maybe this camera 1 2 3 10 20 30 
-    #light f 1 2 3 4 5 6
-    pass
+    view = [250,250,0]
+    if shadeType == 'flat':
+        #ambient
+        aL = [0,0,0]
+        #diffuse
+        dL = [0,0,0]
+        pLvec = [polygons[i][0]-pointL[1][0],
+                 polygons[i][1]-pointL[1][1],
+                 polygons[i][2]-pointL[1][2]]
+        nn = normalize(normal)
+        nl = normalize(pLvec)
+        dnl = dot_prod(nn,nl)
+        #specular
+        sL = [0,0,0]
+        vSvec = [polygons[i][0]-view[0],
+                 polygons[i][1]-view[1],
+                 polygons[i][2]-view[2]]
+        nv = normalize(vSvec)
+        dvn = dot_prod(nv,nn)
+        for i in range(3):
+            aL[i] = ambient[i] * aC
+            dL[i] = pointL[0][i] * dC * dnl
+            sL[i] = (2*dvn*vSvec[i]) - view[i]
+            I[i] = int(aL[i] + dL[i] + sL[i])
+            if I[i] < 0:
+                I[i] = 0
+            if I[i] > 255:
+                I[i] = 255
+    return I
+
 
 def dot_prod(vec1, vec2):
     return (vec1[0]*vec2[0])+(vec1[1]*vec2[1])+(vec1[2]*vec2[2])
