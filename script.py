@@ -54,9 +54,11 @@ def first_pass( commands ):
 
     if not shadeCheck:
         print 'Shading model not specified. Using flat shading model.'
+        shadeType = 'flat'
     if not ambCheck:
-        print 'Ambient lighting source not specified. Setting at 0 0 0.'
-    
+        print 'Ambient lighting source not specified. Setting at 255 255 255.'
+        ambient = [255,255,255]
+
     return (name, num_frames, shadeType, ambient)
 
 """======== second_pass( commands ) ==========
@@ -110,7 +112,7 @@ def run(filename):
     """
     This function runs an mdl script
     """
-    color = [0, 0, 0]
+    color = [66, 134, 244]
     tmp = new_matrix()
     ident( tmp )
 
@@ -124,7 +126,7 @@ def run(filename):
 
     (name, num_frames, shadeType, ambient) = first_pass(commands)
     frames = second_pass(commands, num_frames)
-    step = 0.1
+    step = 0.01
     
     #print symbols
 

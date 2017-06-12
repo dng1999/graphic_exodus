@@ -52,30 +52,32 @@ def normalize(vec):
     return [vec[0]/mag, vec[1]/mag, vec[2]/mag]
 
 def scanline_convert(polygons, i, screen, zbuffer, color, shadeType, ambient):
-    color = [0, 0, 100]
+
+    color = lighting(polygons, i, color, shadeType, ambient)
     p1 = [polygons[i][0],polygons[i][1],polygons[i][2]]
     p2 = [polygons[i+1][0],polygons[i+1][1],polygons[i+1][2]]
     p3 = [polygons[i+2][0],polygons[i+2][1],polygons[i+2][2]]
-    points = dict([(p1[1],[p1[0],p1[2]]),
-                (p2[1],[p2[0],p2[2]]),
-                (p3[1],[p3[0],p3[2]])])
-    skey =  sorted(points)
-    
-    botY = skey[0]
-    botX = points[botY][0]
-    botZ = points[botY][1]
-    
-    midY = skey[1]
-    midX = points[midY][0]
-    midZ = points[midY][1]
-    
-    topY = skey[2]
-    topX = points[topY][0]
-    topZ = points[topY][1]
+    points = [p1,p2,p3]
+    Ys = [p1[1],p2[1],p3[1]]
+
+    bI = Ys.index(min(Ys))
+    botY = Ys.pop(bI)
+    botX = points[bI][0]
+    botZ = points[bI][1]
+    points.pop(bI)
+
+    tI = Ys.index(max(Ys))
+    topY = Ys.pop(tI)
+    topX = points[tI][0]
+    topZ = points[tI][1]
+
+    midY = points[0][1]
+    midX = points[0][0]
+    midZ = points[0][1]
 
     dx0 = float(topX - botX) / (topY - botY)
     dz0 = float(topZ - botZ) / (topY - botY)
-    
+
     if botY != midY:
         dx1 = float(midX - botX) / (midY - botY)
         x1 = botX
@@ -86,7 +88,7 @@ def scanline_convert(polygons, i, screen, zbuffer, color, shadeType, ambient):
         x1 = midX
         dz1 = float(topZ - botZ) / (topY - botY)
         z1 = midZ
-        
+    
     x0 = botX
     z0 = botZ
     y = botY
@@ -114,6 +116,7 @@ def add_polygon( polygons, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
     add_point(polygons, x2, y2, z2);
 
 def draw_polygons( matrix, screen, zbuffer, color, shadeType, ambient ):
+    line = [0,0,0]
     if len(matrix) < 2:
         print 'Need at least 3 points to draw'
         return
@@ -131,21 +134,21 @@ def draw_polygons( matrix, screen, zbuffer, color, shadeType, ambient ):
                        int(matrix[point+1][0]),
                        int(matrix[point+1][1]),
                        matrix[point+1][2],
-                       screen, zbuffer, color)
+                       screen, zbuffer, line)
             draw_line( int(matrix[point+2][0]),
                        int(matrix[point+2][1]),
                        matrix[point+2][2],
                        int(matrix[point+1][0]),
                        int(matrix[point+1][1]),
                        matrix[point+1][2],
-                       screen, zbuffer, color)
+                       screen, zbuffer, line)
             draw_line( int(matrix[point][0]),
                        int(matrix[point][1]),
                        matrix[point][2],
                        int(matrix[point+2][0]),
                        int(matrix[point+2][1]),
                        matrix[point+2][2],
-                       screen, zbuffer, color)    
+                       screen, zbuffer, line)    
         point+= 3
 
 
